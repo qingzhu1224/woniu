@@ -1,54 +1,298 @@
+//index.js
+//获取应用实例
+var app = getApp()
 Page({
   data: {
-    list: [
-      {
-        id: 'view',
-        name: '视图容器',
-        open: false,
-        pages: ['view', 'scroll-view', 'swiper']
-      }, {
-        id: 'content',
-        name: '基础内容',
-        open: false,
-        pages: ['text', 'icon', 'progress']
-      }, {
-        id: 'form',
-        name: '表单组件',
-        open: false,
-        pages: ['button', 'checkbox', 'form', 'input', 'label', 'picker', 'radio', 'slider', 'switch', 'textarea']
-      }, {
-        id: 'nav',
-        name: '导航',
-        open: false,
-        pages: ['navigator']
-      }, {
-        id: 'media',
-        name: '媒体组件',
-        open: false,
-        pages: ['image', 'audio', 'video']
-      }, {
-        id: 'map',
-        name: '地图',
-        pages: ['map']
-      }, {
-        id: 'canvas',
-        name: '画布',
-        pages: ['canvas']
-      }
-    ]
+    indicatorDots: true,
+    autoplay: true,
+    interval: 3000,
+    duration: 1000,
+    loadingHidden: false , // loading
+    userInfo: {},
+    swiperCurrent: 0,  
+    selectCurrent:0,
+    categories: [],
+    activeCategoryId: 0,
+    goods:[],
+    scrollTop:0,
+    loadingMoreHidden:true,
+
+    hasNoCoupons:true,
+    coupons: [],
+    searchInput: '',
   },
-  kindToggle: function (e) {
-    var id = e.currentTarget.id, list = this.data.list;
-    for (var i = 0, len = list.length; i < len; ++i) {
-      if (list[i].id == id) {
-        list[i].open = !list[i].open
-      } else {
-        list[i].open = false
+
+  tabClick: function (e) {
+    this.setData({
+      activeCategoryId: e.currentTarget.id
+    });
+    this.getGoodsList(this.data.activeCategoryId);
+  },
+  //事件处理函数
+  swiperchange: function(e) {
+      //console.log(e.detail.current)
+       this.setData({  
+        swiperCurrent: e.detail.current  
+    })  
+  },
+  toDetailsTap:function(e){
+    wx.navigateTo({
+      url:"/pages/goods-details/index?id="+e.currentTarget.dataset.id
+    })
+  },
+  tapBanner: function(e) {
+    if (e.currentTarget.dataset.id != 0) {
+      wx.navigateTo({
+        url: "/pages/goods-details/index?id=" + e.currentTarget.dataset.id
+      })
+    }
+  },
+  bindTypeTap: function(e) {
+     this.setData({  
+        selectCurrent: e.index  
+    })  
+  },
+  onLoad: function () {
+    var that = this
+    wx.setNavigationBarTitle({
+      title: wx.getStorageSync('mallName')
+    })
+    //轮播图
+    this.setData({
+      banners: [{
+        businessId: 1,
+        picUrl: '../../image/img1.jpeg',
+      },{
+        businessId: 2,
+        picUrl: '../../image/img2.jpeg',
+      },{
+        businessId: 3,
+        picUrl: '../../image/img3.jpeg',
+      }],
+    })
+    // wx.request({
+    //   url: 'https://api.it120.cc/' + app.globalData.subDomain + '/banner/list',
+    //   data: {
+    //     key: 'mallName'
+    //   },
+    //   success: function(res) {
+    //     if (res.data.code == 404) {
+    //       wx.showModal({
+    //         title: '提示',
+    //         content: '请在后台添加 banner 轮播图片',
+    //         showCancel: false
+    //       })
+    //     } else {
+    //       that.setData({
+    //         banners: res.data.data
+    //       });
+    //     }
+    //   }
+    // }),
+    // 分类
+    var categories = [{id:0, name:"全部"},{
+      id: 1, name: "上装"
+    }, {id: 2, name: '裤装'}];
+    that.setData({
+      categories:categories,
+      activeCategoryId:0
+    });
+    that.getGoodsList(0);
+    // wx.request({
+    //   url: 'https://api.it120.cc/'+ app.globalData.subDomain +'/shop/goods/category/all',
+    //   success: function(res) {
+    //     var categories = [{id:0, name:"全部"}];
+    //     if (res.data.code == 0) {
+    //       for (var i = 0; i < res.data.data.length; i++) {
+    //         categories.push(res.data.data[i]);
+    //       }
+    //     }
+    //     that.setData({
+    //       categories:categories,
+    //       activeCategoryId:0
+    //     });
+    //     that.getGoodsList(0);
+    //   }
+    // })
+    that.getCoupons ();
+    that.getNotice ();
+  },
+  onPageScroll(e) {
+    let scrollTop = this.data.scrollTop
+    this.setData({
+      scrollTop: e.scrollTop
+    })
+   },
+  getGoodsList: function (categoryId) {
+    if (categoryId == 0) {
+      categoryId = "";
+    }
+    console.log(categoryId)
+    var that = this;
+    that.setData({
+      goods:[{
+        id: 1,
+        pic: '../../image/img1.jpeg',
+        name: 'hello',
+        minPrice: 'helloeee',
+        originalPrice: '23',
+      }],
+    });
+    // wx.request({
+    //   url: 'https://api.it120.cc/'+ app.globalData.subDomain +'/shop/goods/list',
+    //   data: {
+    //     categoryId: categoryId,
+    //     nameLike: that.data.searchInput
+    //   },
+    //   success: function(res) {
+    //     that.setData({
+    //       goods:[],
+    //       loadingMoreHidden:true
+    //     });
+    //     var goods = [];
+    //     if (res.data.code != 0 || res.data.data.length == 0) {
+    //       that.setData({
+    //         loadingMoreHidden:false,
+    //       });
+    //       return;
+    //     }
+    //     for(var i=0;i<res.data.data.length;i++){
+    //       goods.push(res.data.data[i]);
+    //     }
+    //     that.setData({
+    //       goods:goods,
+    //     });
+    //   }
+    // })
+  },
+  getCoupons: function () {
+    var that = this;
+    that.setData({
+      hasNoCoupons: false,
+      coupons: [{
+        id: 0,
+        moneyMax: 23,
+        name: '新店优惠',
+        moneyHreshold: 56,
+        dateEndType: '2018/12/24',
+        dateEndDays: '30',
+      }],
+    });
+    // wx.request({
+    //   url: 'https://api.it120.cc/' + app.globalData.subDomain + '/discounts/coupons',
+    //   data: {
+    //     type: ''
+    //   },
+    //   success: function (res) {
+    //     if (res.data.code == 0) {
+    //       that.setData({
+    //         hasNoCoupons: false,
+    //         coupons: res.data.data
+    //       });
+    //     }
+    //   }
+    // })
+  },
+  gitCoupon : function (e) {
+    var that = this;
+    // wx.request({
+    //   url: 'https://api.it120.cc/' + app.globalData.subDomain + '/discounts/fetch',
+    //   data: {
+    //     id: e.currentTarget.dataset.id,
+    //     token: wx.getStorageSync('token')
+    //   },
+    //   success: function (res) {
+    //     if (res.data.code == 20001 || res.data.code == 20002) {
+    //       wx.showModal({
+    //         title: '错误',
+    //         content: '来晚了',
+    //         showCancel: false
+    //       })
+    //       return;
+    //     }
+    //     if (res.data.code == 20003) {
+    //       wx.showModal({
+    //         title: '错误',
+    //         content: '你领过了，别贪心哦~',
+    //         showCancel: false
+    //       })
+    //       return;
+    //     }
+    //     if (res.data.code == 30001) {
+    //       wx.showModal({
+    //         title: '错误',
+    //         content: '您的积分不足',
+    //         showCancel: false
+    //       })
+    //       return;
+    //     }
+    //     if (res.data.code == 20004) {
+    //       wx.showModal({
+    //         title: '错误',
+    //         content: '已过期~',
+    //         showCancel: false
+    //       })
+    //       return;
+    //     }
+    //     if (res.data.code == 0) {
+    //       wx.showToast({
+    //         title: '领取成功，赶紧去下单吧~',
+    //         icon: 'success',
+    //         duration: 2000
+    //       })
+    //     } else {
+    //       wx.showModal({
+    //         title: '错误',
+    //         content: res.data.msg,
+    //         showCancel: false
+    //       })
+    //     }
+    //   }
+    // })
+  },
+  onShareAppMessage: function () {
+    return {
+      title: wx.getStorageSync('mallName') + '——' + app.globalData.shareProfile,
+      path: '/pages/index/index',
+      success: function (res) {
+        // 转发成功
+      },
+      fail: function (res) {
+        // 转发失败
       }
     }
+  },
+  getNotice: function () {
+    var that = this;
     this.setData({
-      list: list
-    });
+      noticeList: {
+        dataList: [
+          {
+            id: 1,
+            title: '新商城开场，请多多捧场，优惠多多哦！'
+          }
+        ]
+      }
+    })
+    // wx.request({
+    //   url: 'https://api.it120.cc/' + app.globalData.subDomain + '/notice/list',
+    //   data: { pageSize :5},
+    //   success: function (res) {
+    //     if (res.data.code == 0) {
+    //       that.setData({
+    //         noticeList: res.data.data
+    //       });
+    //     }
+    //   }
+    // })
+  },
+  listenerSearchInput: function (e) {
+    this.setData({
+      searchInput: e.detail.value
+    })
+
+  },
+  toSearch : function (){
+    this.getGoodsList(this.data.activeCategoryId);
   }
 })
-

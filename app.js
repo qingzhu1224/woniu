@@ -3,6 +3,7 @@ const openIdUrl = require('./config').openIdUrl
 App({
   onLaunch: function () {
     console.log('App Launch')
+    console.log('App 登陆')
   },
   onShow: function () {
     console.log('App Show')
