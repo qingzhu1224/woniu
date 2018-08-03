@@ -21,8 +21,9 @@ Page({
     coupons: [],
     searchInput: '',
   },
-
+  //点击分类事件，例如‘全部’、‘上装’等
   tabClick: function (e) {
+    console.log(e.currentTarget)
     this.setData({
       activeCategoryId: e.currentTarget.id
     });
@@ -67,7 +68,7 @@ Page({
         picUrl: '../../image/img2.jpeg',
       },{
         businessId: 3,
-        picUrl: '../../image/img3.jpeg',
+        picUrl: '../../image/img4.jpg',
       }],
     })
     // wx.request({
@@ -129,14 +130,41 @@ Page({
     }
     console.log(categoryId)
     var that = this;
+    const goods = [{
+      id: 1,
+      pic: '../../image/img3.jpeg',
+      name: '护肤美白',
+      minPrice: '200',
+      originalPrice: '2300',
+      categoryId: '1'
+    }, {
+      id: 2,
+      pic: '../../image/img6.jpg',
+      name: '连衣裙',
+      minPrice: '599',
+      originalPrice: '999',
+      categoryId: '1'
+    }, {
+      id: 3,
+      pic: '../../image/img7.jpg',
+      name: '白色婚纱',
+      minPrice: '1999',
+      originalPrice: '2399',
+      categoryId: '2'
+    }, {
+      id: 4,
+      pic: '../../image/img9.jpg',
+      name: '紧身连衣裙',
+      minPrice: '899',
+      originalPrice: '1599',
+      categoryId: '2'
+    }];
+    const _goods = goods.filter((item, idx) => {
+      if (categoryId == '') return true;
+      return categoryId === item.categoryId;
+    })
     that.setData({
-      goods:[{
-        id: 1,
-        pic: '../../image/img1.jpeg',
-        name: 'hello',
-        minPrice: 'helloeee',
-        originalPrice: '23',
-      }],
+      goods: _goods,
     });
     // wx.request({
     //   url: 'https://api.it120.cc/'+ app.globalData.subDomain +'/shop/goods/list',
@@ -176,7 +204,21 @@ Page({
         moneyHreshold: 56,
         dateEndType: '2018/12/24',
         dateEndDays: '30',
-      }],
+      }, {
+        id: 1,
+        moneyMax: 35,
+        name: '周年庆',
+        moneyHreshold: 100,
+        dateEndType: '2018/12/24',
+        dateEndDays: '30',
+        }, {
+          id: 2,
+          moneyMax: 30,
+          name: '七夕节',
+          moneyHreshold: 200,
+          dateEndType: '2018/12/24',
+          dateEndDays: '30',
+        }],
     });
     // wx.request({
     //   url: 'https://api.it120.cc/' + app.globalData.subDomain + '/discounts/coupons',
