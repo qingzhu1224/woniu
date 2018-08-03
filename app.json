@@ -1,6 +1,8 @@
 {
   "pages": [
     "page/component/index",
+    "page/notice/show",
+    "page/goods-details/index",
 
     "page/component/pages/view/view",
     "page/component/pages/scroll-view/scroll-view",

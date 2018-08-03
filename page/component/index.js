@@ -36,12 +36,16 @@ Page({
         swiperCurrent: e.detail.current  
     })  
   },
+  //详情事件
   toDetailsTap:function(e){
+    console.log('详情事件')
     wx.navigateTo({
-      url:"/pages/goods-details/index?id="+e.currentTarget.dataset.id
+      url:"/page/goods-details/index?id="+e.currentTarget.dataset.id
     })
   },
+  //轮播图事件
   tapBanner: function(e) {
+    console.log('hello, 我是轮播图')
     if (e.currentTarget.dataset.id != 0) {
       wx.navigateTo({
         url: "/pages/goods-details/index?id=" + e.currentTarget.dataset.id
@@ -56,7 +60,7 @@ Page({
   onLoad: function () {
     var that = this
     wx.setNavigationBarTitle({
-      title: wx.getStorageSync('mallName')
+      title: '秘密花园'
     })
     //轮播图
     this.setData({
